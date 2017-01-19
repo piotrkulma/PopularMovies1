@@ -6,10 +6,14 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import pl.piotrkulma.popularmoviesstage1.utility.MovieDBHelper;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
@@ -25,6 +29,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
 
+    private TextView errorView;
+
+    private Menu menu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         initMovieDBApi();
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, COLUMNS_IN_GRID);
+        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
+        errorView = (TextView) findViewById(R.id.grid_error);
         progressBar = (ProgressBar) findViewById(R.id.grid_loading_indicator);
         moviesAdapter = new MoviesAdapter(this);
 
@@ -42,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(moviesAdapter);
 
-        loadMovies();
+        loadMovies(MovieDBHelper.SortOrder.POPULAR);
     }
 
     @Override
@@ -51,6 +61,31 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         movieIntent.putExtra("movieData", movie);
 
         startActivity(movieIntent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sort_order_menu, menu);
+        this.menu = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.isChecked()) {
+            return false;
+        }
+
+        if(item.getItemId() == R.id.item_most_popular) {
+            menu.getItem(1).setChecked(false);
+            loadMovies(MovieDBHelper.SortOrder.POPULAR);
+        } else if(item.getItemId() == R.id.item_top_rated) {
+            menu.getItem(0).setChecked(false);
+            loadMovies(MovieDBHelper.SortOrder.TOP_RATED);
+        }
+
+        item.setChecked(true);
+        return true;
     }
 
     public class FetchMoviesTask extends AsyncTask<MovieDBHelper.SortOrder, Void, MovieDBResponse[]>{
@@ -72,12 +107,20 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         protected void onPostExecute(MovieDBResponse[] movieDBResponses) {
             progressBar.setVisibility(View.INVISIBLE);
             moviesAdapter.setMovies(movieDBResponses);
+
+            if(movieDBResponses.length == 0) {
+                errorView.setVisibility(View.VISIBLE);
+            } else {
+                errorView.setVisibility(View.INVISIBLE);
+            }
+
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void loadMovies() {
+    private void loadMovies(MovieDBHelper.SortOrder sortOrder) {
         FetchMoviesTask moviesTask = new FetchMoviesTask();
-        moviesTask.execute(MovieDBHelper.SortOrder.POPULAR);
+        moviesTask.execute(sortOrder);
     }
 
     private void initMovieDBApi() {

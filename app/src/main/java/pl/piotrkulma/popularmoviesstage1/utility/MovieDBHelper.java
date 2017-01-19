@@ -54,6 +54,10 @@ public final class MovieDBHelper {
             }
         } catch (JSONException e) {
             Log.e(LOGGING_KEY, "ERROR while creating responses list from moviedb API: " + e.getMessage());
+            returnList = new MovieDBResponse[0];
+        } catch (NullPointerException npe) {
+            Log.e(LOGGING_KEY, "ERROR while creating responses list from moviedb API: " + npe.getMessage());
+            returnList = new MovieDBResponse[0];
         }
 
         return returnList;

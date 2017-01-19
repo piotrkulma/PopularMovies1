@@ -25,6 +25,8 @@ public class MovieActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
 
+        initChildViews();
+
         Intent intentFromParent = getIntent();
 
         MovieDBResponse movieData = (MovieDBResponse)intentFromParent.getSerializableExtra("movieData");
@@ -32,14 +34,16 @@ public class MovieActivity extends AppCompatActivity {
         fillMovieData(movieData);
     }
 
-    private void fillMovieData(MovieDBResponse movieData) {
+    private void initChildViews() {
         title = (TextView) findViewById(R.id.movie_title);
         releaseDate = (TextView) findViewById(R.id.movie_release_date);
         poster = (ImageView) findViewById(R.id.movie_poster);
         avgVotes = (TextView) findViewById(R.id.movie_avg_votes);
         synopsis = (TextView) findViewById(R.id.movie_synopsis);
         progressBar = (ProgressBar) findViewById(R.id.movie_progressbar);
+    }
 
+    private void fillMovieData(MovieDBResponse movieData) {
         showAll();
 
         title.setText(movieData.getTitle());
@@ -47,6 +51,7 @@ public class MovieActivity extends AppCompatActivity {
         avgVotes.setText(movieData.getVoteAverage());
         synopsis.setText(movieData.getPlotSynopsis());
 
+        //TODO put this into AsyncTasc
         Picasso.with(MovieActivity.this).load(movieData.getPosterUrl()).into(poster);
 
         //showAll();

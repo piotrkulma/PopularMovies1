@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">PopularMovies</string>
+    <string name="app_name">Popular Movies</string>
     <string name="api_key_value"></string>
+    <string name="error_message">Error occured. Check internet connection and tap here to reconnect.</string>
+    <string name="most_popular_so">Most popular</string>
+    <string name="top_rated_so">Top rated</string>
 </resources>
