@@ -4,6 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Piotr Kulma on 2017-01-18.
@@ -41,6 +43,16 @@ public final class MovieDBResponse implements Serializable {
         return releaseDate;
     }
 
+    public String getReleaseDateYear() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            return Integer.toString(sdf.parse(getReleaseDate()).getYear() + 1900);
+        } catch (ParseException e) {
+            return getReleaseDate();
+        }
+    }
+
     public String getPosterPath() {
         return posterPath;
     }
@@ -51,6 +63,10 @@ public final class MovieDBResponse implements Serializable {
 
     public String getVoteAverage() {
         return voteAverage;
+    }
+
+    public String getVoteAgerageFull() {
+        return getVoteAverage() + "/10";
     }
 
     public String getPlotSynopsis() {

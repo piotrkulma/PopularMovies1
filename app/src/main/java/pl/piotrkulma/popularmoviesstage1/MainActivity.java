@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private Menu menu;
 
+    private MovieDBHelper.SortOrder actualSortOrder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,10 +42,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         initMovieDBApi();
 
+        actualSortOrder = MovieDBHelper.SortOrder.POPULAR;
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, COLUMNS_IN_GRID);
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         errorView = (TextView) findViewById(R.id.grid_error);
+        errorView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMovies(actualSortOrder);
+            }
+        });
+
         progressBar = (ProgressBar) findViewById(R.id.grid_loading_indicator);
         moviesAdapter = new MoviesAdapter(this);
 
@@ -52,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(moviesAdapter);
 
-        loadMovies(MovieDBHelper.SortOrder.POPULAR);
+        loadMovies(actualSortOrder);
     }
 
     @Override
@@ -72,16 +83,18 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.isChecked()) {
+        if(item.isChecked() && errorView.getVisibility() == View.INVISIBLE) {
             return false;
         }
 
         if(item.getItemId() == R.id.item_most_popular) {
             menu.getItem(1).setChecked(false);
             loadMovies(MovieDBHelper.SortOrder.POPULAR);
+            actualSortOrder = MovieDBHelper.SortOrder.POPULAR;
         } else if(item.getItemId() == R.id.item_top_rated) {
             menu.getItem(0).setChecked(false);
             loadMovies(MovieDBHelper.SortOrder.TOP_RATED);
+            actualSortOrder = MovieDBHelper.SortOrder.TOP_RATED;
         }
 
         item.setChecked(true);

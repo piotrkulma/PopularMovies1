@@ -44,17 +44,15 @@ public class MovieActivity extends AppCompatActivity {
     }
 
     private void fillMovieData(MovieDBResponse movieData) {
-        showAll();
+        hideAll();
 
         title.setText(movieData.getTitle());
-        releaseDate.setText(movieData.getReleaseDate());
-        avgVotes.setText(movieData.getVoteAverage());
+        releaseDate.setText(movieData.getReleaseDateYear());
+        avgVotes.setText(movieData.getVoteAgerageFull());
         synopsis.setText(movieData.getPlotSynopsis());
 
-        //TODO put this into AsyncTasc
         Picasso.with(MovieActivity.this).load(movieData.getPosterUrl()).into(poster);
-
-        //showAll();
+        showAll();
     }
 
     private void showAll() {
