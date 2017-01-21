@@ -18,6 +18,11 @@ import android.widget.TextView;
 import pl.piotrkulma.popularmoviesstage1.utility.MovieDBHelper;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 
+/**
+ * Main activity showing movies grid
+ *
+ */
+
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MovieClickHandler {
     private static int COLUMNS_IN_GRID = 2;
     private String LOGGING_KEY = MainActivity.class.getName();
@@ -81,6 +86,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         return true;
     }
 
+    /**
+     * Only one menu item can be selected at one time,
+     * so when eg. menu item from index 0 is checked then
+     * item from index 1 should be unchecked.
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.isChecked() && errorView.getVisibility() == View.INVISIBLE) {
@@ -101,6 +114,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         return true;
     }
 
+    /**
+     * Fetching movie posters form moviedb rest service and putting them into movies grid.
+     *
+     */
     public class FetchMoviesTask extends AsyncTask<MovieDBHelper.SortOrder, Void, MovieDBResponse[]>{
         @Override
         protected void onPreExecute() {

@@ -12,6 +12,10 @@ import com.squareup.picasso.Picasso;
 
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 
+/**
+ * Activity for displaying single movie details.
+ *
+ */
 public class MovieActivity extends AppCompatActivity {
     private TextView title;
     private TextView releaseDate;

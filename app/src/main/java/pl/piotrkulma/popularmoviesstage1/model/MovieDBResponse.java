@@ -11,6 +11,10 @@ import java.text.SimpleDateFormat;
  * Created by Piotr Kulma on 2017-01-18.
  */
 
+/**
+ * Model that holds single movie data fetched from moviedb rest service.
+ *
+ */
 public final class MovieDBResponse implements Serializable {
     private static String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185";
 

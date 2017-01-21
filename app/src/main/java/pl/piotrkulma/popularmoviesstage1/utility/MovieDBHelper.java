@@ -18,7 +18,8 @@ import java.net.URL;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 
 /**
- * This class is a helper utility to access themoviedb.org API
+ * This class is a helper utility to access themoviedb.org API.
+ *
  */
 public final class MovieDBHelper {
     private String LOGGING_KEY = MovieDBHelper.class.getName();
@@ -38,6 +39,12 @@ public final class MovieDBHelper {
         this.apiKeyValue = apiKeyValue;
     }
 
+    /**
+     * Fetching movie data from moviedb service into model's array.
+     *
+     * @param sortOrder sort order (top rated, most popular)
+     * @return
+     */
     public MovieDBResponse[] getMovieDBResponses(SortOrder sortOrder) {
         JSONObject jsonReposnse = getMovieDBApiResponse(sortOrder);
         MovieDBResponse returnList[] = null;
