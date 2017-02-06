@@ -1,7 +1,17 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="api_key_value"></string>
+    <string name="api_key_value">1e98467bcad77b7db076c33ae0f04520</string>
     <string name="error_message">Error occured. Check internet connection and tap here to reconnect.</string>
     <string name="most_popular_so">Most popular</string>
     <string name="top_rated_so">Top rated</string>
+
+    <string name="poster_description">Poster image</string>
+
+    <string name="mock_movie_title">Back to The Future</string>
+    <string name="mock_movie_release_date">2015</string>
+    <string name="mock_movie_duration">120min</string>
+    <string name="mock_movie_rating">8/10</string>
+    <string name="mock_movie_favourite">Mark as favorite</string>
+    <string name="mock_movie_unmark_favourite">Unmarkark favorite</string>
+    <string name="mock_movie_synopsis">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
 </resources>
