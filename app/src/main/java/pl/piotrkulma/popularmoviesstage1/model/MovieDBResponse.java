@@ -18,23 +18,46 @@ import java.text.SimpleDateFormat;
 public final class MovieDBResponse implements Serializable {
     private static String POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185";
 
+    private String id;
     private String title;
     private String releaseDate;
     private String posterPath;
     private String voteAverage;
     private String plotSynopsis;
+    private String runtime;
+
+    private MovieDBTrailersResponse[] videos;
+    private MovieDBReviewResponse[] reviews;
 
     private MovieDBResponse() {
     }
 
     public static final class MovieDBResponseBuilder {
         public static MovieDBResponse build(JSONObject json) throws JSONException {
+            return build(json, null, null);
+        }
+
+        public static MovieDBResponse build(
+                JSONObject json,
+                MovieDBTrailersResponse[] videos,
+                MovieDBReviewResponse[] reviews) throws JSONException {
             MovieDBResponse response = new MovieDBResponse();
+            response.id = json.getString("id");
             response.title = json.getString("title");
             response.releaseDate = json.getString("release_date");
             response.posterPath = json.getString("poster_path");
             response.voteAverage = json.getString("vote_average");
             response.plotSynopsis = json.getString("overview");
+
+            if(!json.isNull("runtime")) {
+                response.runtime = json.getString("runtime");
+            } else {
+                response.runtime = null;
+            }
+
+            response.videos = videos;
+            response.reviews = reviews;
+
             return response;
         }
     }
@@ -57,6 +80,10 @@ public final class MovieDBResponse implements Serializable {
         }
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getPosterPath() {
         return posterPath;
     }
@@ -75,5 +102,25 @@ public final class MovieDBResponse implements Serializable {
 
     public String getPlotSynopsis() {
         return plotSynopsis;
+    }
+
+    public String getRuntime() {
+        return runtime;
+    }
+
+    public String getRuntimeFull() {
+        if(runtime != null) {
+            return runtime + "min";
+        }
+
+        return null;
+    }
+
+    public MovieDBTrailersResponse[] getVideos() {
+        return videos;
+    }
+
+    public MovieDBReviewResponse[] getReviews() {
+        return reviews;
     }
 }

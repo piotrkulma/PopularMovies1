@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         @Override
         protected MovieDBResponse[] doInBackground(MovieDBHelper.SortOrder... params) {
-            MovieDBResponse response[] = movieDBHelper.getMovieDBResponses(params[0]);
+            MovieDBResponse response[] = movieDBHelper.getMovies(params[0]);
             Log.d(LOGGING_KEY, "Response from moviedbapi: " + (response==null?"null":response.length));
 
             return response;
