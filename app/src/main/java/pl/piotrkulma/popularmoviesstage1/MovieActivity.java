@@ -3,19 +3,26 @@ package pl.piotrkulma.popularmoviesstage1;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import pl.piotrkulma.popularmoviesstage1.databinding.ActivityMovieDetailsBinding;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBReviewResponse;
+import pl.piotrkulma.popularmoviesstage1.model.MovieDBTrailersResponse;
 import pl.piotrkulma.popularmoviesstage1.utility.MovieDBHelper;
 
 /**
@@ -23,6 +30,8 @@ import pl.piotrkulma.popularmoviesstage1.utility.MovieDBHelper;
  *
  */
 public class MovieActivity extends AppCompatActivity {
+    private String LOGGING_KEY = MovieActivity.class.getName();
+
     private ImageView poster;
     private LinearLayout trailersLayout;
     private LinearLayout reviewsLayout;
@@ -89,6 +98,7 @@ public class MovieActivity extends AppCompatActivity {
         protected void onPostExecute(MovieDBResponse movieDBResponse) {
             super.onPostExecute(movieDBResponse);
 
+            showTrailers(movieDBResponse);
             showReviews(movieDBResponse);
 
             movieDetailsBinding.setMovie(movieDBResponse);
@@ -98,16 +108,114 @@ public class MovieActivity extends AppCompatActivity {
             if(movieDBResponse.getReviews() != null && movieDBResponse.getReviews().length > 0) {
                 for(int i=0; i<movieDBResponse.getReviews().length; i++) {
                     MovieDBReviewResponse review = movieDBResponse.getReviews()[i];
-                    reviewsLayout.addView(newTextView(review), i);
+                    reviewsLayout.addView(newRewiewItem(review), i);
                 }
             }
         }
 
-        private TextView newTextView(MovieDBReviewResponse review) {
-            TextView textView = new TextView(getApplicationContext());
-            textView.setText(review.getAuthor());
+        private void showTrailers(MovieDBResponse movieDBResponse) {
+            if(movieDBResponse.getVideos() != null && movieDBResponse.getVideos().length > 0) {
+                for(int i=0; i<movieDBResponse.getVideos().length; i++) {
+                    MovieDBTrailersResponse trailer = movieDBResponse.getVideos()[i];
+                    trailersLayout.addView(newTrailerItem(trailer), i);
+                }
+            }
+        }
 
-            return textView;
+        private String getReviewShort(String fullReview) {
+            if(fullReview != null && fullReview.length() > 30) {
+                return fullReview.substring(0, 29) + "...(show more)";
+            }
+
+            return fullReview;
+        }
+
+        private ConstraintLayout newTrailerItem(final MovieDBTrailersResponse trailer) {
+            final Context ctx = getApplicationContext();
+
+            ConstraintLayout constraintLayout = (ConstraintLayout)getLayoutInflater().inflate(R.layout.trailer_item, null);
+
+            TextView textView = (TextView) constraintLayout.findViewById(R.id.movie_trailer_name);
+            textView.setText(trailer.getName() + " (" + trailer.getSite() + " " + trailer.getSize()  + ")");
+
+            ImageButton shareButton = (ImageButton) constraintLayout.findViewById(R.id.movie_trailers_share_button);
+            shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        ShareCompat.IntentBuilder
+                                .from(MovieActivity.this)
+                                .setChooserTitle("Share " + trailer.getSite() + " trailer")
+                                .setType("text/html")
+                                .setText(trailer.getSiteUrl())
+                                .startChooser();
+                        //startActivity(shareIntent);
+                    } catch(Exception e) {
+                        Log.e(LOGGING_KEY, "Cannot start sharing: " + e.getMessage());
+                        Toast.makeText(ctx, "xxx", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            ImageButton playButton = (ImageButton) constraintLayout.findViewById(R.id.movie_trailers_play_button);
+            playButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+                        Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(trailer.getSiteUrl()));
+                        startActivity(myIntent);
+                    } catch(Exception e) {
+                        Log.e(LOGGING_KEY, "Cannot start activity: " + e.getMessage());
+                        Toast.makeText(ctx, "xxx", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            return constraintLayout;
+        }
+
+        private LinearLayout newRewiewItem(final MovieDBReviewResponse review) {
+            LinearLayout linearLayout = (LinearLayout)getLayoutInflater().inflate(R.layout.review_item, null);
+
+            TextView userName = (TextView)linearLayout.findViewById(R.id.movie_reviews_user_name);
+            userName.setText("Review by: " + review.getAuthor());
+
+            final TextView shortReview = (TextView)linearLayout.findViewById(R.id.movie_reviews_user_review_short);
+            shortReview.setText(getReviewShort(review.getContent()));
+
+            final TextView fullReview = (TextView)linearLayout.findViewById(R.id.movie_reviews_user_review_full);
+            fullReview.setText(review.getContent() + " (show less)");
+
+            shortReview.setVisibility(View.VISIBLE);
+            fullReview.setVisibility(View.GONE);
+
+            linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(shortReview.getVisibility() == View.GONE) {
+                        shortReview.setVisibility(View.VISIBLE);
+                        fullReview.setVisibility(View.GONE);
+                    } else {
+                        shortReview.setVisibility(View.GONE);
+                        fullReview.setVisibility(View.VISIBLE);
+                    }
+                    /*ShareCompat.IntentBuilder
+                            .from(MovieActivity.this)
+                            .setChooserTitle("XXX")
+                            .setType("text/html")
+                            .setText("YYY")
+                            .startChooser();*/
+                    /*try {
+                        Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
+                        startActivity(myIntent);
+                    } catch(Exception e) {
+                        Log.e(LOGGING_KEY, "Cannot start activity: " + e.getMessage());
+                        Toast.makeText(ctx, "xxx", Toast.LENGTH_SHORT).show();
+                    }*/
+                }
+            });
+
+            return linearLayout;
         }
     }
 }
