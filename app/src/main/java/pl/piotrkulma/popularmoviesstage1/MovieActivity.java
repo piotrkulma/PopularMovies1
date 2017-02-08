@@ -149,7 +149,6 @@ public class MovieActivity extends AppCompatActivity {
                                 .setType("text/html")
                                 .setText(trailer.getSiteUrl())
                                 .startChooser();
-                        //startActivity(shareIntent);
                     } catch(Exception e) {
                         Log.e(LOGGING_KEY, "Cannot start sharing: " + e.getMessage());
                         Toast.makeText(ctx, "xxx", Toast.LENGTH_SHORT).show();
@@ -199,19 +198,6 @@ public class MovieActivity extends AppCompatActivity {
                         shortReview.setVisibility(View.GONE);
                         fullReview.setVisibility(View.VISIBLE);
                     }
-                    /*ShareCompat.IntentBuilder
-                            .from(MovieActivity.this)
-                            .setChooserTitle("XXX")
-                            .setType("text/html")
-                            .setText("YYY")
-                            .startChooser();*/
-                    /*try {
-                        Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl()));
-                        startActivity(myIntent);
-                    } catch(Exception e) {
-                        Log.e(LOGGING_KEY, "Cannot start activity: " + e.getMessage());
-                        Toast.makeText(ctx, "xxx", Toast.LENGTH_SHORT).show();
-                    }*/
                 }
             });
 
