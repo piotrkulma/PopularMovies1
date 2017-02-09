@@ -1,11 +1,15 @@
 package pl.piotrkulma.popularmoviesstage1.model;
 
+import android.database.Cursor;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
+import pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract;
 
 /**
  * Created by Piotr Kulma on 2017-01-18.
@@ -35,6 +39,20 @@ public final class MovieDBResponse implements Serializable {
     public static final class MovieDBResponseBuilder {
         public static MovieDBResponse build(JSONObject json) throws JSONException {
             return build(json, null, null);
+        }
+
+        public static MovieDBResponse build(Cursor cursor) throws Exception {
+            MovieDBResponse response = new MovieDBResponse();
+            response.id = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER));
+            response.title = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_TITLE));
+            response.releaseDate = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RELEASE_DATE));
+            response.posterPath = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH));
+            response.voteAverage = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE));
+            response.plotSynopsis = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS));
+            response.videos = null;
+            response.reviews = null;
+
+            return response;
         }
 
         public static MovieDBResponse build(

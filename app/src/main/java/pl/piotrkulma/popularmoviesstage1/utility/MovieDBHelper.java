@@ -4,6 +4,7 @@ package pl.piotrkulma.popularmoviesstage1.utility;
  * Created by Piotr Kulma on 2017-01-18.
  */
 
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
@@ -36,7 +37,7 @@ public final class MovieDBHelper {
     private String apiKeyValue;
 
     public enum SortOrder {
-        TOP_RATED, POPULAR
+        TOP_RATED, POPULAR, FAVORITE
     }
 
     public MovieDBHelper(String apiKeyValue) {
@@ -68,6 +69,32 @@ public final class MovieDBHelper {
             returnList = new MovieDBResponse[0];
         } catch (NullPointerException npe) {
             Log.e(LOGGING_KEY, "ERROR while creating responses list from moviedb API: " + npe.getMessage());
+            returnList = new MovieDBResponse[0];
+        }
+
+        return returnList;
+    }
+
+    /**
+     * Fetching movie data from cursor model's array.
+     *
+     * @param cursor
+     * @return
+     */
+    public MovieDBResponse[] getMovies(Cursor cursor) {
+        MovieDBResponse returnList[];
+        try {
+            int i = 0;
+            returnList = new MovieDBResponse[cursor.getCount()];
+
+            cursor.moveToFirst();
+
+            while (cursor.isAfterLast() == false) {
+                returnList[i++] = MovieDBResponse.MovieDBResponseBuilder.build(cursor);
+                cursor.moveToNext();
+            }
+        } catch (Exception e) {
+            Log.e(LOGGING_KEY, "ERROR while creating responses list from cursor: " + e.getMessage());
             returnList = new MovieDBResponse[0];
         }
 

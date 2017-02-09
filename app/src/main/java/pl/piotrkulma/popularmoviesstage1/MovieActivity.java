@@ -1,5 +1,7 @@
 package pl.piotrkulma.popularmoviesstage1;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -19,6 +21,8 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract;
+import pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteMovieProvider;
 import pl.piotrkulma.popularmoviesstage1.databinding.ActivityMovieDetailsBinding;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBReviewResponse;
@@ -35,6 +39,10 @@ public class MovieActivity extends AppCompatActivity {
     private ImageView poster;
     private LinearLayout trailersLayout;
     private LinearLayout reviewsLayout;
+
+    private TextView favorite;
+
+    private MovieDBResponse movieData;
     //private ProgressBar progressBar;
 
     private ActivityMovieDetailsBinding movieDetailsBinding;
@@ -46,13 +54,33 @@ public class MovieActivity extends AppCompatActivity {
         initMovieDBApi();
         initViews();
         bindData();
+
+        favorite = (TextView) findViewById(R.id.favourite);
+
+        final ContentResolver resolver = getContentResolver();
+
+        favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentValues cv = new ContentValues();
+                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER, movieData.getId());
+                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_TITLE, movieData.getTitle());
+                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RELEASE_DATE, movieData.getReleaseDate());
+                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH, movieData.getPosterPath());
+                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE, movieData.getVoteAverage());
+                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS, movieData.getPlotSynopsis());
+                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME, movieData.getRuntime());
+
+                Uri uri = resolver.insert(FavoriteMovieProvider.CONTENT_URI, cv);
+                Log.d(LOGGING_KEY, uri.toString());
+            }
+        });
     }
 
     private void initViews() {
         movieDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
         trailersLayout = (LinearLayout)findViewById(R.id.movie_trailers);
         reviewsLayout = (LinearLayout)findViewById(R.id.movie_reviews);
-
         poster = (ImageView) findViewById(R.id.poster);
         //progressBar = (ProgressBar) findViewById(R.id.movie_progressbar);
     }
@@ -61,7 +89,7 @@ public class MovieActivity extends AppCompatActivity {
         hideAll();
         Intent intentFromParent = getIntent();
 
-        MovieDBResponse movieData = (MovieDBResponse)intentFromParent.getSerializableExtra("movieData");
+        movieData = (MovieDBResponse)intentFromParent.getSerializableExtra("movieData");
         movieDetailsBinding.setMovie(movieData);
 
         Picasso.with(MovieActivity.this).load(movieData.getPosterUrl()).into(poster);

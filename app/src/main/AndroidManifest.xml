@@ -23,6 +23,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <provider
+            android:authorities="pl.piotrkulma.popularmoviesstage1.data.provider"
+            android:name="pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteMovieProvider"
+            android:exported="false"
+            />
+
     </application>
 
 </manifest>

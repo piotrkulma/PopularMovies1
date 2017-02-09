@@ -4,6 +4,7 @@
     <string name="error_message">Error occured. Check internet connection and tap here to reconnect.</string>
     <string name="most_popular_so">Most popular</string>
     <string name="top_rated_so">Top rated</string>
+    <string name="favorite_so">Favorite</string>
 
     <string name="poster_description">Poster image</string>
     <string name="play_button_description">Play movie</string>

@@ -1,7 +1,9 @@
 package pl.piotrkulma.popularmoviesstage1;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract;
+import pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteMovieProvider;
 import pl.piotrkulma.popularmoviesstage1.utility.MovieDBHelper;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 
@@ -102,20 +106,30 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         if(item.getItemId() == R.id.item_most_popular) {
             menu.getItem(1).setChecked(false);
+            menu.getItem(2).setChecked(false);
             loadMovies(MovieDBHelper.SortOrder.POPULAR);
             actualSortOrder = MovieDBHelper.SortOrder.POPULAR;
         } else if(item.getItemId() == R.id.item_top_rated) {
             menu.getItem(0).setChecked(false);
+            menu.getItem(2).setChecked(false);
             loadMovies(MovieDBHelper.SortOrder.TOP_RATED);
             actualSortOrder = MovieDBHelper.SortOrder.TOP_RATED;
+        } else if(item.getItemId() == R.id.item_favorite) {
+            menu.getItem(0).setChecked(false);
+            menu.getItem(1).setChecked(false);
+            loadMovies(MovieDBHelper.SortOrder.FAVORITE);
+            actualSortOrder = MovieDBHelper.SortOrder.FAVORITE;
         }
 
         item.setChecked(true);
         return true;
     }
 
+
+
     /**
-     * Fetching movie posters form moviedb rest service and putting them into movies grid.
+     * Fetching movie posters form moviedb rest service or content provider (if favorite)
+     * and putting them into movies grid.
      *
      */
     public class FetchMoviesTask extends AsyncTask<MovieDBHelper.SortOrder, Void, MovieDBResponse[]>{
@@ -127,7 +141,35 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         @Override
         protected MovieDBResponse[] doInBackground(MovieDBHelper.SortOrder... params) {
-            MovieDBResponse response[] = movieDBHelper.getMovies(params[0]);
+            MovieDBResponse response[];
+
+            if(params[0] == MovieDBHelper.SortOrder.FAVORITE) {
+                response = null;
+
+                final ContentResolver resolver = getContentResolver();
+
+                String[] projection = new String[]{
+                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER,
+                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_TITLE,
+                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RELEASE_DATE,
+                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH,
+                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE,
+                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS,
+                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME
+                };
+
+                Cursor query = resolver.query(
+                        FavoriteMovieProvider.CONTENT_URI,
+                        projection,
+                        null,
+                        null,
+                        null);
+
+                response = movieDBHelper.getMovies(query);
+                Log.d(LOGGING_KEY, "ContentProvider query size: " + Integer.toString(query.getCount()));
+            } else {
+                response = movieDBHelper.getMovies(params[0]);
+            }
             Log.d(LOGGING_KEY, "Response from moviedbapi: " + (response==null?"null":response.length));
 
             return response;
