@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER;
 import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS;
 import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH;
+import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PHOTO;
 import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RELEASE_DATE;
 import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME;
 import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_TITLE;
@@ -19,7 +20,7 @@ import static pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract.Favor
 
 public class FavoriteMovieDbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "FavoriteMovie.db";
+    public static final String DATABASE_NAME = "favorite_movie.db";
 
     private static final String SQL_CREATE_TABLE =
             "CREATE TABLE " + TABLE_NAME + "(" +
@@ -30,7 +31,8 @@ public class FavoriteMovieDbHelper extends SQLiteOpenHelper {
                     COLUMN_NAME_POSTER_PATH + " TEXT," +
                     COLUMN_NAME_VOTE_AVERAGE + " TEXT," +
                     COLUMN_NAME_PLOT_SYNOPSIS + " TEXT," +
-                    COLUMN_NAME_RUNTIME + " TEXT" +
+                    COLUMN_NAME_RUNTIME + " TEXT," +
+                    COLUMN_NAME_POSTER_PHOTO + " BLOB" +
                     ")";
 
     private static final String SQL_DROP_TABLE =

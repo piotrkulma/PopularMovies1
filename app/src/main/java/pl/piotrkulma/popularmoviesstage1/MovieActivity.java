@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.constraint.ConstraintLayout;
@@ -20,6 +23,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import pl.piotrkulma.popularmoviesstage1.data.DbBitmapUtility;
 import pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteProviderHelper;
 import pl.piotrkulma.popularmoviesstage1.databinding.ActivityMovieDetailsBinding;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
@@ -43,7 +47,6 @@ public class MovieActivity extends AppCompatActivity {
     private ImageView favorite;
 
     private MovieDBResponse movieData;
-    //private ProgressBar progressBar;
 
     private ActivityMovieDetailsBinding movieDetailsBinding;
     private MovieDBHelper movieDBHelper;
@@ -63,7 +66,10 @@ public class MovieActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(FAVORITE_TAG_VALUE_OFF.equals(v.getTag(R.string.favorite_tag_key))) {
-                    Uri uri = FavoriteProviderHelper.addNewFavorite(getContentResolver(), movieData);
+                    BitmapDrawable bitmapDrawable = ((BitmapDrawable) poster.getDrawable());
+                    Bitmap bitmap = bitmapDrawable.getBitmap();
+
+                    Uri uri = FavoriteProviderHelper.addNewFavorite(getContentResolver(), movieData, bitmap);
 
                     Toast.makeText(getApplicationContext(), "Added to favorite list", Toast.LENGTH_SHORT).show();
                     Log.d(LOGGING_KEY, "SELECTING AS FAVORITE " + uri.toString());
@@ -96,7 +102,6 @@ public class MovieActivity extends AppCompatActivity {
         trailersLayout = (LinearLayout)findViewById(R.id.movie_trailers);
         reviewsLayout = (LinearLayout)findViewById(R.id.movie_reviews);
         poster = (ImageView) findViewById(R.id.poster);
-        //progressBar = (ProgressBar) findViewById(R.id.movie_progressbar);
     }
 
     private void bindData() {
@@ -106,7 +111,11 @@ public class MovieActivity extends AppCompatActivity {
         movieData = (MovieDBResponse)intentFromParent.getSerializableExtra("movieData");
         movieDetailsBinding.setMovie(movieData);
 
-        Picasso.with(MovieActivity.this).load(movieData.getPosterUrl()).into(poster);
+        if(movieData.getPosterPhoto() != null) {
+            poster.setImageBitmap(DbBitmapUtility.getImage(movieData.getPosterPhoto()));
+        } else {
+            Picasso.with(MovieActivity.this).load(movieData.getPosterUrl()).into(poster);
+        }
         showAll();
 
         MovieDetailsTask detailsTask = new MovieDetailsTask();
@@ -115,12 +124,10 @@ public class MovieActivity extends AppCompatActivity {
 
     private void showAll() {
         poster.setVisibility(View.VISIBLE);
-        //progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void hideAll() {
         poster.setVisibility(View.INVISIBLE);
-        //progressBar.setVisibility(View.VISIBLE);
     }
 
     private void initMovieDBApi() {
@@ -140,10 +147,17 @@ public class MovieActivity extends AppCompatActivity {
         protected void onPostExecute(MovieDBResponse movieDBResponse) {
             super.onPostExecute(movieDBResponse);
 
-            showTrailers(movieDBResponse);
-            showReviews(movieDBResponse);
+            if(movieDBResponse == null) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        "You are pobably offline. Some functionality might be unavailable",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                showTrailers(movieDBResponse);
+                showReviews(movieDBResponse);
 
-            movieDetailsBinding.setMovie(movieDBResponse);
+                movieDetailsBinding.setMovie(movieDBResponse);
+            }
         }
 
         private void showReviews(MovieDBResponse movieDBResponse) {
@@ -161,6 +175,7 @@ public class MovieActivity extends AppCompatActivity {
                     MovieDBTrailersResponse trailer = movieDBResponse.getVideos()[i];
                     trailersLayout.addView(newTrailerItem(trailer), i);
                 }
+                trailersLayout.refreshDrawableState();
             }
         }
 
@@ -193,7 +208,7 @@ public class MovieActivity extends AppCompatActivity {
                                 .startChooser();
                     } catch(Exception e) {
                         Log.e(LOGGING_KEY, "Cannot start sharing: " + e.getMessage());
-                        Toast.makeText(ctx, "xxx", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Error occured", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -207,7 +222,7 @@ public class MovieActivity extends AppCompatActivity {
                         startActivity(myIntent);
                     } catch(Exception e) {
                         Log.e(LOGGING_KEY, "Cannot start activity: " + e.getMessage());
-                        Toast.makeText(ctx, "xxx", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Error occured", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

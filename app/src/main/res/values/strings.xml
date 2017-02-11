@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="api_key_value">1e98467bcad77b7db076c33ae0f04520</string>
-    <string name="error_message">Error occured. Check internet connection and tap here to reconnect.</string>
+    <string name="api_key_value"></string>
+    <string name="error_message">You are in offline mode you can only show favorite items. Check your connectivity and tap here to reconnect.</string>
     <string name="error_message_favorite">You do not have any favorite movie yet :)</string>
 
     <string name="most_popular_so">Most popular</string>

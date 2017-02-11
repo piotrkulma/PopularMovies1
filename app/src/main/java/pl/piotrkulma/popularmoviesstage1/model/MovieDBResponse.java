@@ -29,6 +29,7 @@ public final class MovieDBResponse implements Serializable {
     private String voteAverage;
     private String plotSynopsis;
     private String runtime;
+    private byte[] posterPhoto;
 
     private MovieDBTrailersResponse[] videos;
     private MovieDBReviewResponse[] reviews;
@@ -49,6 +50,8 @@ public final class MovieDBResponse implements Serializable {
             response.posterPath = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH));
             response.voteAverage = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE));
             response.plotSynopsis = cursor.getString(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS));
+            response.posterPhoto = cursor.getBlob(cursor.getColumnIndex(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PHOTO));
+
             response.videos = null;
             response.reviews = null;
 
@@ -72,6 +75,8 @@ public final class MovieDBResponse implements Serializable {
             } else {
                 response.runtime = null;
             }
+
+            response.posterPhoto = null;
 
             response.videos = videos;
             response.reviews = reviews;
@@ -132,6 +137,10 @@ public final class MovieDBResponse implements Serializable {
         }
 
         return null;
+    }
+
+    public byte[] getPosterPhoto() {
+        return posterPhoto;
     }
 
     public MovieDBTrailersResponse[] getVideos() {

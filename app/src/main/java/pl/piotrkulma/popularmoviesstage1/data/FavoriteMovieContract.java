@@ -20,5 +20,6 @@ public final class FavoriteMovieContract {
         public static final String COLUMN_NAME_VOTE_AVERAGE     = "vote_average";
         public static final String COLUMN_NAME_PLOT_SYNOPSIS    = "plot_synopsis";
         public static final String COLUMN_NAME_RUNTIME          = "runtime";
+        public static final String COLUMN_NAME_POSTER_PHOTO     = "poster_photo";
     }
 }

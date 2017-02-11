@@ -3,8 +3,10 @@ package pl.piotrkulma.popularmoviesstage1.data.provider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 
+import pl.piotrkulma.popularmoviesstage1.data.DbBitmapUtility;
 import pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 
@@ -32,7 +34,8 @@ public final class FavoriteProviderHelper {
                 FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH,
                 FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE,
                 FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS,
-                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME,
+                FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PHOTO
         };
 
         Cursor query = resolver.query(
@@ -45,7 +48,7 @@ public final class FavoriteProviderHelper {
         return query;
     }
 
-    public static Uri addNewFavorite(ContentResolver resolver, MovieDBResponse movieData) {
+    public static Uri addNewFavorite(ContentResolver resolver, MovieDBResponse movieData, Bitmap bitmap) {
         ContentValues cv = new ContentValues();
         cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER, movieData.getId());
         cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_TITLE, movieData.getTitle());
@@ -54,6 +57,7 @@ public final class FavoriteProviderHelper {
         cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE, movieData.getVoteAverage());
         cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS, movieData.getPlotSynopsis());
         cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME, movieData.getRuntime());
+        cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PHOTO, DbBitmapUtility.getBytes(bitmap));
 
         Uri uri = resolver.insert(FavoriteMovieProvider.CONTENT_URI, cv);
 

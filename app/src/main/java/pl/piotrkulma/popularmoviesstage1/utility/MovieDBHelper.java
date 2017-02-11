@@ -37,7 +37,7 @@ public final class MovieDBHelper {
     private String apiKeyValue;
 
     public enum SortOrder {
-        TOP_RATED, POPULAR, FAVORITE
+        POPULAR, TOP_RATED, FAVORITE
     }
 
     public MovieDBHelper(String apiKeyValue) {
