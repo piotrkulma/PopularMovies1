@@ -1,9 +1,8 @@
 package pl.piotrkulma.popularmoviesstage1;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,8 +20,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract;
-import pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteMovieProvider;
+import pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteProviderHelper;
 import pl.piotrkulma.popularmoviesstage1.databinding.ActivityMovieDetailsBinding;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBReviewResponse;
@@ -34,13 +32,15 @@ import pl.piotrkulma.popularmoviesstage1.utility.MovieDBHelper;
  *
  */
 public class MovieActivity extends AppCompatActivity {
+    public static final String FAVORITE_TAG_VALUE_ON = "ON";
+    public static final String FAVORITE_TAG_VALUE_OFF = "OFF";
     private String LOGGING_KEY = MovieActivity.class.getName();
 
     private ImageView poster;
     private LinearLayout trailersLayout;
     private LinearLayout reviewsLayout;
 
-    private TextView favorite;
+    private ImageView favorite;
 
     private MovieDBResponse movieData;
     //private ProgressBar progressBar;
@@ -55,26 +55,40 @@ public class MovieActivity extends AppCompatActivity {
         initViews();
         bindData();
 
-        favorite = (TextView) findViewById(R.id.favourite);
+        favorite = (ImageView) findViewById(R.id.favorite);
 
-        final ContentResolver resolver = getContentResolver();
+        refreshFavoriteImage();
 
         favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContentValues cv = new ContentValues();
-                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER, movieData.getId());
-                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_TITLE, movieData.getTitle());
-                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RELEASE_DATE, movieData.getReleaseDate());
-                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH, movieData.getPosterPath());
-                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE, movieData.getVoteAverage());
-                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS, movieData.getPlotSynopsis());
-                cv.put(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME, movieData.getRuntime());
+                if(FAVORITE_TAG_VALUE_OFF.equals(v.getTag(R.string.favorite_tag_key))) {
+                    Uri uri = FavoriteProviderHelper.addNewFavorite(getContentResolver(), movieData);
 
-                Uri uri = resolver.insert(FavoriteMovieProvider.CONTENT_URI, cv);
-                Log.d(LOGGING_KEY, uri.toString());
+                    Toast.makeText(getApplicationContext(), "Added to favorite list", Toast.LENGTH_SHORT).show();
+                    Log.d(LOGGING_KEY, "SELECTING AS FAVORITE " + uri.toString());
+                } else {
+                    int count = FavoriteProviderHelper.removeFavorite(getContentResolver(), movieData.getId());
+
+                    Toast.makeText(getApplicationContext(), "Removed from favorite list", Toast.LENGTH_SHORT).show();
+                    Log.d(LOGGING_KEY, "UNSELECTING AS FAVORITE " + count);
+                }
+
+                refreshFavoriteImage();
             }
         });
+    }
+
+    private void refreshFavoriteImage() {
+        Cursor cursor = FavoriteProviderHelper.selectFavoritesCursorById(getContentResolver(), movieData.getId());
+
+        if(cursor.getCount() > 0) {
+            favorite.setImageResource(android.R.drawable.star_big_on);
+            favorite.setTag(R.string.favorite_tag_key, FAVORITE_TAG_VALUE_ON);
+        } else {
+            favorite.setImageResource(android.R.drawable.star_big_off);
+            favorite.setTag(R.string.favorite_tag_key, FAVORITE_TAG_VALUE_OFF);
+        }
     }
 
     private void initViews() {

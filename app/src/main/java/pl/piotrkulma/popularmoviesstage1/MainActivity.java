@@ -1,6 +1,5 @@
 package pl.piotrkulma.popularmoviesstage1;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,8 +16,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import pl.piotrkulma.popularmoviesstage1.data.FavoriteMovieContract;
-import pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteMovieProvider;
+import pl.piotrkulma.popularmoviesstage1.data.provider.FavoriteProviderHelper;
 import pl.piotrkulma.popularmoviesstage1.utility.MovieDBHelper;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 
@@ -39,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private ProgressBar progressBar;
 
     private TextView errorView;
+    private TextView favoriteErrorView;
 
     private Menu menu;
 
@@ -63,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 loadMovies(actualSortOrder);
             }
         });
+
+        favoriteErrorView = (TextView) findViewById(R.id.favorite_error);
 
         progressBar = (ProgressBar) findViewById(R.id.grid_loading_indicator);
         moviesAdapter = new MoviesAdapter(this);
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.isChecked() && errorView.getVisibility() == View.INVISIBLE) {
+        if(item.isChecked() && errorView.getVisibility() == View.GONE) {
             return false;
         }
 
@@ -125,14 +126,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         return true;
     }
 
-
-
     /**
      * Fetching movie posters form moviedb rest service or content provider (if favorite)
      * and putting them into movies grid.
      *
      */
     public class FetchMoviesTask extends AsyncTask<MovieDBHelper.SortOrder, Void, MovieDBResponse[]>{
+        private MovieDBHelper.SortOrder actualOrder;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -143,28 +143,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         protected MovieDBResponse[] doInBackground(MovieDBHelper.SortOrder... params) {
             MovieDBResponse response[];
 
+            actualOrder = params[0];
+
             if(params[0] == MovieDBHelper.SortOrder.FAVORITE) {
-                response = null;
-
-                final ContentResolver resolver = getContentResolver();
-
-                String[] projection = new String[]{
-                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER,
-                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_TITLE,
-                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RELEASE_DATE,
-                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_POSTER_PATH,
-                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_VOTE_AVERAGE,
-                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_PLOT_SYNOPSIS,
-                        FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_RUNTIME
-                };
-
-                Cursor query = resolver.query(
-                        FavoriteMovieProvider.CONTENT_URI,
-                        projection,
-                        null,
-                        null,
-                        null);
-
+                Cursor query = FavoriteProviderHelper.selectAllFavoritesCursor(getContentResolver());
                 response = movieDBHelper.getMovies(query);
                 Log.d(LOGGING_KEY, "ContentProvider query size: " + Integer.toString(query.getCount()));
             } else {
@@ -181,9 +163,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             moviesAdapter.setMovies(movieDBResponses);
 
             if(movieDBResponses.length == 0) {
-                errorView.setVisibility(View.VISIBLE);
+                if(actualOrder == MovieDBHelper.SortOrder.FAVORITE) {
+                    favoriteErrorView.setVisibility(View.VISIBLE);
+                } else {
+                    errorView.setVisibility(View.VISIBLE);
+                }
             } else {
-                errorView.setVisibility(View.INVISIBLE);
+                errorView.setVisibility(View.GONE);
+                favoriteErrorView.setVisibility(View.GONE);
             }
 
             progressBar.setVisibility(View.INVISIBLE);

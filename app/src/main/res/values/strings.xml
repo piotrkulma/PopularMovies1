@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="api_key_value"></string>
+    <string name="api_key_value">1e98467bcad77b7db076c33ae0f04520</string>
     <string name="error_message">Error occured. Check internet connection and tap here to reconnect.</string>
+    <string name="error_message_favorite">You do not have any favorite movie yet :)</string>
+
     <string name="most_popular_so">Most popular</string>
     <string name="top_rated_so">Top rated</string>
     <string name="favorite_so">Favorite</string>
@@ -9,6 +11,7 @@
     <string name="poster_description">Poster image</string>
     <string name="play_button_description">Play movie</string>
     <string name="share_button_description">Share trailer</string>
+    <string name="favorite_tag_key">FAVORITE_TAG_KEY</string>
 
     <string name="mock_movie_title">Back to The Future</string>
     <string name="mock_movie_release_date">2015</string>

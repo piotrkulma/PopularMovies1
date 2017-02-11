@@ -58,7 +58,7 @@ public final class FavoriteMovieProvider extends ContentProvider {
             case MOVIES:
                 break;
             case MOVIE_ID:
-                qb.appendWhere(FavoriteMovieContract.FavoriteMovieEntry._ID +
+                qb.appendWhere(FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER +
                         " = " + uri.getLastPathSegment());
                 break;
             default:
@@ -113,7 +113,7 @@ public final class FavoriteMovieProvider extends ContentProvider {
             String id = uri.getLastPathSegment();
             count = db.delete(
                     FavoriteMovieContract.FavoriteMovieEntry.TABLE_NAME,
-                    FavoriteMovieContract.FavoriteMovieEntry._ID + " = " + id,
+                    FavoriteMovieContract.FavoriteMovieEntry.COLUMN_NAME_IDENTIFIER + " = " + id,
                     selectionArgs);
         } else {
             throw new IllegalArgumentException("Unsupported URI: " + uri);
