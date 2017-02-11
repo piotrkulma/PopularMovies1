@@ -1,7 +1,29 @@
 <resources>
     <string name="app_name">Popular Movies</string>
     <string name="api_key_value"></string>
-    <string name="error_message">Error occured. Check internet connection and tap here to reconnect.</string>
+    <string name="error_message">You are in offline mode you can only show favorite items. Check your connectivity and tap here to reconnect.</string>
+    <string name="error_message_favorite">You do not have any favorite movie yet :)</string>
+
     <string name="most_popular_so">Most popular</string>
     <string name="top_rated_so">Top rated</string>
+    <string name="favorite_so">Favorite</string>
+
+    <string name="poster_description">Poster image</string>
+    <string name="play_button_description">Play movie</string>
+    <string name="share_button_description">Share trailer</string>
+    <string name="favorite_tag_key">FAVORITE_TAG_KEY</string>
+
+    <string name="mock_movie_title">Back to The Future</string>
+    <string name="mock_movie_release_date">2015</string>
+    <string name="mock_movie_duration">120min</string>
+    <string name="mock_movie_rating">8/10</string>
+    <string name="mock_movie_favourite">Mark as favorite</string>
+    <string name="mock_movie_unmark_favourite">Unmarkark favorite</string>
+    <string name="mock_movie_synopsis">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+
+    <string name="mock_user_name">Janek123456</string>
+    <string name="mock_review_short">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore...</string>
+    <string name="mock_review_full">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+
+    <string name="mock_trailer_name">Incredible trailer movie (2016) (480)</string>
 </resources>

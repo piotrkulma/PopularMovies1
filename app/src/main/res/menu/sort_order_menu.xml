@@ -3,16 +3,23 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
         <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/item_most_popular"
-            android:title="@string/most_popular_so"
-            app:showAsAction="never"
-            android:checkable="true"
-            android:checked="true" />
-        <item
-            android:id="@+id/item_top_rated"
-            android:title="@string/top_rated_so"
-            app:showAsAction="never"
-            android:checkable="true"/>
+                <item
+                    android:id="@+id/item_most_popular"
+                    android:title="@string/most_popular_so"
+                    app:showAsAction="never"
+                    android:checkable="true"
+                    android:checked="true" />
+
+                <item
+                    android:id="@+id/item_top_rated"
+                    android:title="@string/top_rated_so"
+                    app:showAsAction="never"
+                    android:checkable="true"/>
+
+                <item
+                    android:id="@+id/item_favorite"
+                    android:title="@string/favorite_so"
+                    app:showAsAction="never"
+                    android:checkable="true"/>
         </group>
 </menu>

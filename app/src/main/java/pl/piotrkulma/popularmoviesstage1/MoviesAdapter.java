@@ -1,6 +1,8 @@
 package pl.piotrkulma.popularmoviesstage1;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import pl.piotrkulma.popularmoviesstage1.data.DbBitmapUtility;
 import pl.piotrkulma.popularmoviesstage1.model.MovieDBResponse;
 
 /**
@@ -43,7 +46,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     @Override
     public void onBindViewHolder(MoviesAdapterViewHolder holder, int position) {
         MovieDBResponse movie = movies[position];
-        Picasso.with(context).load(movie.getPosterUrl()).into(holder.imageView);
+        if(movie.getPosterPhoto() != null) {
+            holder.imageView.setImageBitmap(DbBitmapUtility.getImage(movie.getPosterPhoto()));
+        } else {
+            Picasso.with(context).load(movie.getPosterUrl()).into(holder.imageView);
+        }
     }
 
     @Override
